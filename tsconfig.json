@@ -14,7 +14,13 @@
     "lib": [
       "es2018",
       "dom"
-    ]
+    ],
+    "paths": {
+      "ngx-layout-outlet": [
+        "dist/ngx-layout-outlet/ngx-layout-outlet",
+        "dist/ngx-layout-outlet"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "fullTemplateTypeCheck": true,

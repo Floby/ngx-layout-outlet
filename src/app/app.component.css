@@ -1,0 +1,50 @@
+:host {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column
+}
+
+header {
+  height: 4em;
+  background: lightblue;
+  font-weight: bold;
+  box-sizing: border-box;
+  padding: 1em;
+  display: flex;
+  align-items: center;
+
+}
+
+main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+#left {
+  height: 100%;
+  width: 30vw;
+  flex-grow: 0;
+  flex-shrink: 0;
+  background: pink;
+
+  box-sizing: border-box;
+  padding: 1em;
+}
+
+#center {
+  height: 100%;
+  flex-grow: 1;
+  flex-shrink: 1;
+
+  box-sizing: border-box;
+  padding: 1em;
+}
+
+h2 {
+  font-size: 120%;
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  border-bottom: 1px solid gray;
+}
