@@ -14,7 +14,8 @@ export class LayoutService {
   display(outletName: string, tpl: TemplateRef<any>) {
     const outlet = this.outlets.get(outletName)
     if (outlet) {
-      outlet.attach(tpl)
+      const detach = outlet.attach(tpl)
+      return detach
     }
   }
 

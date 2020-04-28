@@ -28,8 +28,9 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
     this.layout.unregisterOutlet(this)
   }
 
-  attach(toDisplay: TemplateRef<any>) {
-    this.location.createEmbeddedView(toDisplay)
+  attach(toDisplay: TemplateRef<any>): () => void {
+    const embeddedView = this.location.createEmbeddedView(toDisplay)
+    return  () => this.location.detach()
   }
 
 }

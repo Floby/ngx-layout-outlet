@@ -1,5 +1,8 @@
 <header>
-  You are here: <lo-outlet name="breadcrumb"></lo-outlet>
+  <div class="breadcrumb">
+    You are here: <lo-outlet name="breadcrumb"></lo-outlet>
+  </div>
+  <a [routerLink]="['/']">← Back to Home</a>
 </header>
 <main>
   <aside id="left">

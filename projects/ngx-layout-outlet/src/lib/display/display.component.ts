@@ -4,7 +4,8 @@ import {
   OnInit,
   ViewChild,
   Input,
-  TemplateRef
+  TemplateRef,
+  OnDestroy
 } from '@angular/core';
 
 @Component({
@@ -12,12 +13,14 @@ import {
   templateUrl: './display.component.html',
   styleUrls: ['./display.component.css']
 })
-export class DisplayComponent implements OnInit {
+export class DisplayComponent implements OnInit, OnDestroy {
 
   @Input()
   in: string;
 
   @ViewChild('toDisplay', { read: TemplateRef, static: true }) toDisplay: TemplateRef<any>;
+
+  private cleanDisplay?: () => void
 
   constructor(
     private layout: LayoutService
@@ -25,7 +28,13 @@ export class DisplayComponent implements OnInit {
 
   ngOnInit(): void {
     const tpl = this.toDisplay
-    this.layout.display(this.in, tpl)
+    this.cleanDisplay = this.layout.display(this.in, tpl)
+  }
+
+  ngOnDestroy(): void {
+    if (this.cleanDisplay) {
+      this.cleanDisplay()
+    }
   }
 
 }
