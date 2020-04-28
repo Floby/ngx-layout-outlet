@@ -24,7 +24,7 @@ main {
 
 #left {
   height: 100%;
-  width: 30vw;
+  width: 20vw;
   flex-grow: 0;
   flex-shrink: 0;
   background: pink;
