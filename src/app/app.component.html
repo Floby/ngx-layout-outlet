@@ -1,12 +1,14 @@
 <header>
-  You are here:
+  You are here: <lo-outlet name="breadcrumb"></lo-outlet>
 </header>
 <main>
   <aside id="left">
     <h2>Left</h2>
+    <lo-outlet name="left"></lo-outlet>
   </aside>
   <section id="center">
     <h2>Center</h2>
+    <lo-outlet name="center"></lo-outlet>
   </section>
 </main>
 <router-outlet></router-outlet>

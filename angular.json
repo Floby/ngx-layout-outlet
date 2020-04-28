@@ -8,7 +8,7 @@
       "schematics": {},
       "root": "",
       "sourceRoot": "src",
-      "prefix": "lo",
+      "prefix": "elo",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",

@@ -1,11 +1,13 @@
-import { NgModule } from '@angular/core';
 
+import { NgModule } from '@angular/core';
+import { DisplayComponent } from './display/display.component';
+import { LayoutOutletDirective } from './layout-outlet.directive';
 
 
 @NgModule({
-  declarations: [],
+  declarations: [DisplayComponent, LayoutOutletDirective],
   imports: [
   ],
-  exports: []
+  exports: [DisplayComponent, LayoutOutletDirective]
 })
 export class NgxLayoutOutletModule { }
