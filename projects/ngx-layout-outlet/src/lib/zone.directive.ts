@@ -27,8 +27,8 @@ export class ZoneDirective implements OnInit, OnDestroy {
   subscription: Subscription
 
   @Input('loZone')
-  set loZone(condition: boolean) {
-    this.name = condition ? 'left' : undefined
+  set loZone(name: string) {
+    this.name = name
     this.updateView()
   }
 
