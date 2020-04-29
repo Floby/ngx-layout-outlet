@@ -8,17 +8,17 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 export class IndexComponent implements OnInit, OnDestroy {
 
   seconds = 0;
-  interval = null
+  interval = null;
   constructor() { }
 
   ngOnInit(): void {
     this.interval = setInterval(() => {
-      this.seconds++
-    }, 1000)
+      this.seconds++;
+    }, 1000);
   }
 
-  ngOnDestroy () {
-    clearInterval(this.interval)
+  ngOnDestroy() {
+    clearInterval(this.interval);
   }
 
 }

@@ -1,6 +1,6 @@
 import { LayoutService } from './layout.service';
 import { ReplaySubject, Subscription } from 'rxjs';
-import { switchMap, distinct, delay } from 'rxjs/operators';
+import { switchMap, distinctUntilChanged, delay } from 'rxjs/operators';
 import { ZoneName } from './zone-name';
 import {
   Attribute,
@@ -17,7 +17,6 @@ import {
 })
 export class LayoutOutletDirective implements OnInit, OnDestroy {
 
-  private _name: string;
   private active = false;
   private templateSubscription: Subscription;
   private outletName = new ReplaySubject<string>(1);
@@ -27,12 +26,7 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
     if (!next) {
       return;
     }
-    const previous = this._name;
-    this._name = next;
     this.outletName.next(next);
-  }
-  get name() {
-    return this._name;
   }
 
   @Input()
@@ -49,7 +43,7 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.templateSubscription = this.outletName.pipe(
-      distinct(),
+      distinctUntilChanged(),
       switchMap((name) => this.layout.templatesFor(name))
     ).subscribe((templates) => {
       this.attach(templates);

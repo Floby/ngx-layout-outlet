@@ -1,5 +1,5 @@
 import { Subscription, ReplaySubject } from 'rxjs';
-import { delay, switchMap, filter, distinct } from 'rxjs/operators';
+import { delay, switchMap, filter, distinctUntilChanged } from 'rxjs/operators';
 import { LayoutService } from './layout.service';
 import { LayoutOutletDirective } from './layout-outlet.directive';
 import { ZoneName } from './zone-name';
@@ -44,7 +44,7 @@ export class ZoneDirective implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscription = this.zoneName.pipe(
-      distinct(),
+      distinctUntilChanged(),
       switchMap((name) => this.layout.hasContentFor(name)),
       delay(0) // Necessary for child outlet to trigger
     ).subscribe((hasContent) => {

@@ -1,4 +1,4 @@
-import { LayoutService } from '../layout.service'
+import { LayoutService } from '../layout.service';
 import {
   Component,
   OnInit,
@@ -20,20 +20,20 @@ export class DisplayComponent implements OnInit, OnDestroy {
 
   @ViewChild('toDisplay', { read: TemplateRef, static: true }) toDisplay: TemplateRef<any>;
 
-  private cleanDisplay?: () => void
+  private cleanDisplay?: () => void;
 
   constructor(
     private layout: LayoutService
   ) { }
 
   ngOnInit(): void {
-    const tpl = this.toDisplay
-    this.cleanDisplay = this.layout.display(this.in, tpl)
+    const tpl = this.toDisplay;
+    this.cleanDisplay = this.layout.display(this.in, tpl);
   }
 
   ngOnDestroy(): void {
     if (this.cleanDisplay) {
-      this.cleanDisplay()
+      this.cleanDisplay();
     }
   }
 
