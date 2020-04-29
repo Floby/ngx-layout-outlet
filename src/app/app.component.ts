@@ -22,13 +22,10 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private layout: LayoutService
   ) {
-    this.layout.onContentChanged.pipe(
-      filter((name) => name === 'left'),
-      delay(1),
-      map((name) => this.layout.hasContentFor('left'))
-    ).subscribe((hasContent) => {
-      this.hasLeftContent = hasContent
-    })
+    this.layout.templatesFor('left')
+      .subscribe((templates) => {
+        console.log('APP left', templates)
+      })
   }
   ngOnInit() {
   }

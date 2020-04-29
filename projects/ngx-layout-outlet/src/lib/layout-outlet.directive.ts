@@ -1,4 +1,7 @@
 import { LayoutService } from './layout.service';
+import { ReplaySubject, Subscription } from 'rxjs';
+import { switchMap, distinct, delay } from 'rxjs/operators';
+import { ZoneName } from './zone-name';
 import {
   Attribute,
   Directive,
@@ -16,12 +19,17 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
 
   private _name: string;
   private active = false;
+  private templateSubscription: Subscription;
+  private outletName = new ReplaySubject<string>(1);
 
   @Input('name')
   set name(next) {
+    if (!next) {
+      return;
+    }
     const previous = this._name;
     this._name = next;
-    this.onNamedChanged(previous, next);
+    this.outletName.next(next);
   }
   get name() {
     return this._name;
@@ -33,27 +41,28 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
 
   constructor(
     private location: ViewContainerRef,
-    private layout: LayoutService
+    private layout: LayoutService,
+    private zoneName: ZoneName
   ) {
-    this.name = name;
-  }
-
-  onNamedChanged(previous, next) {
-    if (this.active) {
-      this.layout.unregisterOutlet(this);
-      this.layout.registerOutlet(next, this);
-    }
+    this.zoneName.subscribe((name) => this.outletName.next(name));
   }
 
   ngOnInit() {
-    const location = this.location;
-    this.layout.registerOutlet(this.name, this);
-    this.active = true
+    this.templateSubscription = this.outletName.pipe(
+      distinct(),
+      switchMap((name) => this.layout.templatesFor(name))
+    ).subscribe((templates) => {
+      this.attach(templates);
+    });
+    this.active = true;
   }
 
   ngOnDestroy() {
-    this.layout.unregisterOutlet(this);
-    this.active = false
+    if (this.templateSubscription) {
+      this.templateSubscription.unsubscribe();
+      delete this.templateSubscription;
+    }
+    this.active = false;
   }
 
   attach(toDisplay: TemplateRef<any>[]) {
@@ -61,7 +70,7 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
     if (this.exclusive) {
       const lastTemplate = toDisplay[toDisplay.length - 1];
       if (lastTemplate) {
-        this.location.createEmbeddedView(lastTemplate)
+        this.location.createEmbeddedView(lastTemplate);
       }
     } else {
       for (const template of toDisplay) {

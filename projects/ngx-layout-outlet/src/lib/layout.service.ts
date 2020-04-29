@@ -1,3 +1,5 @@
+import { Observable, Subject, ReplaySubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { LayoutOutletDirective } from './layout-outlet.directive';
 import {
   EventEmitter,
@@ -5,63 +7,75 @@ import {
   TemplateRef
 } from '@angular/core';
 
+type Templates = TemplateRef<any>[];
+
 @Injectable({
   providedIn: 'root'
 })
 export class LayoutService {
-  private outlets: Map<string, LayoutOutletDirective> = new Map();
-  private templates: Map<string, TemplateRef<any>[]> = new Map();
+  private templates: Map<string, Templates> = new Map();
+  private tplSubjects: Map<string, PeakingReplaySubject<Templates>> =  new Map();
   constructor() { }
 
-  onContentChanged = new EventEmitter<string>()
+  onContentChanged = new EventEmitter<string>();
 
   display(name: string, tpl: TemplateRef<any>): () => void {
-    this.addTemplateForName(name, tpl)
-    this.updateForName(name)
-    this.onContentChanged.emit(name)
+    this.addTemplateForName(name, tpl);
+    this.onContentChanged.emit(name);
+
     return () => {
-      this.removeTemplateForName(name, tpl)
-      this.updateForName(name)
-      this.onContentChanged.emit(name)
-    }
+      this.removeTemplateForName(name, tpl);
+      this.onContentChanged.emit(name);
+    };
   }
 
-  hasContentFor(name: string): boolean {
-    const templatesForName = this.templates.get(name) || []
-    return templatesForName.length > 0
+  hasContentFor(name: string): Observable<boolean> {
+    return this.templatesFor(name).pipe(
+      map((templates) => templates.length ? true : false)
+    );
   }
 
-  private updateForName(name: string) {
-    const outlet = this.outlets.get(name)
-    const templates = this.templates.get(name) || []
-    if (outlet) {
-      outlet.attach(templates)
-    }
+  templatesFor(name: string): Observable<Templates> {
+    const subject = this.getTemplateSubject(name);
+    return subject.asObservable();
   }
 
   private addTemplateForName(name: string, tpl: TemplateRef<any>) {
-    const templatesForName = this.templates.get(name) || []
-    templatesForName.push(tpl)
-    const newTemplates = [...templatesForName, tpl]
-    this.templates.set(name, newTemplates)
+    const templatesForName = this.templates.get(name) || [];
+    const newTemplates = [...templatesForName, tpl];
+    this.templates.set(name, newTemplates);
+    this.getTemplateSubject(name).next(newTemplates);
   }
 
   private removeTemplateForName(name: string, toRemove: TemplateRef<any>) {
-    const templatesForName = this.templates.get(name) || []
-    const newTemplates = templatesForName.filter((template) => template !== toRemove)
-    this.templates.set(name, newTemplates)
+    const templatesForName = this.templates.get(name) || [];
+    const newTemplates = templatesForName.filter((template) => template !== toRemove);
+    this.templates.set(name, newTemplates);
+    this.getTemplateSubject(name).next(newTemplates);
   }
 
-  registerOutlet(name: string, outlet: LayoutOutletDirective) {
-    this.outlets.set(name, outlet)
-    this.updateForName(name)
-  }
-
-  unregisterOutlet(outlet: LayoutOutletDirective) {
-    const entry = [...this.outlets.entries()]
-      .find(([k, v]) => v === outlet)
-    if (entry) {
-      this.outlets.delete(entry[0])
+  private getTemplateSubject(name: string) {
+    if (!this.tplSubjects.has(name)) {
+      const subject = new PeakingReplaySubject<Templates>([]);
+      this.tplSubjects.set(name, subject);
     }
+    return this.tplSubjects.get(name);
+  }
+}
+
+class PeakingReplaySubject<T> extends ReplaySubject<T> {
+  private last: T;
+  constructor(initial?: T) {
+    super(1);
+    this.last = initial;
+  }
+
+  peak(): T|undefined {
+    return this.last;
+  }
+
+  next(item: T) {
+    this.last = item;
+    super.next(item);
   }
 }

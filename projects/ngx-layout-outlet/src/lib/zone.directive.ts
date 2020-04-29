@@ -1,7 +1,8 @@
-import { Subscription } from 'rxjs';
-import { filter, distinct } from 'rxjs/operators'
+import { Subscription, ReplaySubject } from 'rxjs';
+import { delay, switchMap, filter, distinct } from 'rxjs/operators';
 import { LayoutService } from './layout.service';
 import { LayoutOutletDirective } from './layout-outlet.directive';
+import { ZoneName } from './zone-name';
 import {
   Attribute,
   Directive,
@@ -17,50 +18,51 @@ import {
 } from '@angular/core';
 
 @Directive({
-  selector: '[loZone]'
+  selector: '[loZone]',
+  providers: [ZoneName]
 })
 export class ZoneDirective implements OnInit, OnDestroy {
 
-  @ViewChild(LayoutOutletDirective)
-  outlet: LayoutOutletDirective;
-
-  subscription: Subscription
+  subscription: Subscription;
 
   @Input('loZone')
   set loZone(name: string) {
-    this.name = name
-    this.updateView()
+    this.zoneName.next(name);
   }
 
-  private name: string
 
   constructor(
+    @Attribute('id') id: string,
+    @Attribute('name') name: string,
     private layout: LayoutService,
     private viewContainer: ViewContainerRef,
-    private zoneTemplate: TemplateRef<any>
+    private zoneTemplate: TemplateRef<any>,
+    private zoneName: ZoneName,
   ) {
+    this.zoneName.next(id || name);
   }
 
   ngOnInit() {
-    this.subscription = this.layout.onContentChanged
-      .pipe(filter((name) => name === this.name))
-      .pipe(distinct())
-      .subscribe((name) => {
-        this.updateView()
-    })
+    this.subscription = this.zoneName.pipe(
+      distinct(),
+      switchMap((name) => this.layout.hasContentFor(name)),
+      delay(0) // Necessary for child outlet to trigger
+    ).subscribe((hasContent) => {
+      hasContent ? this.displayView() : this.clearView();
+    });
   }
   ngOnDestroy() {
     if (this.subscription) {
-      this.subscription.unsubscribe()
+      this.subscription.unsubscribe();
     }
   }
 
-  private updateView() {
-    const name = this.name
-    const hasContentToDisplay = this.layout.hasContentFor(this.name)
-    this.viewContainer.clear()
-    if (this.layout.hasContentFor(this.name)) {
-      this.viewContainer.createEmbeddedView(this.zoneTemplate)
-    }
+  private displayView() {
+    this.clearView();
+    const view = this.viewContainer.createEmbeddedView(this.zoneTemplate);
+  }
+
+  private clearView() {
+    this.viewContainer.clear();
   }
 }
