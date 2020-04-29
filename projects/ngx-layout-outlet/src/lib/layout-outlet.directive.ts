@@ -27,6 +27,9 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
     return this._name;
   }
 
+  @Input()
+  exclusive = false;
+
 
   constructor(
     private location: ViewContainerRef,
@@ -53,8 +56,15 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
 
   attach(toDisplay: TemplateRef<any>[]) {
     this.detach();
-    for (const template of toDisplay) {
-      this.location.createEmbeddedView(template);
+    if (this.exclusive) {
+      const lastTemplate = toDisplay[toDisplay.length - 1];
+      if (lastTemplate) {
+        this.location.createEmbeddedView(lastTemplate)
+      }
+    } else {
+      for (const template of toDisplay) {
+        this.location.createEmbeddedView(template);
+      }
     }
     this.active = true;
   }
