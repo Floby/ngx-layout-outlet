@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs';
 import { delay, filter, map } from 'rxjs/operators';
-import { LayoutService } from 'ngx-layout-outlet';
 import {
   Component,
   OnInit,
@@ -20,12 +19,7 @@ export class AppComponent implements OnInit, OnDestroy {
   hasLeftContent = false;
 
   constructor(
-    private layout: LayoutService
   ) {
-    this.layout.templatesFor('left')
-      .subscribe((templates) => {
-        console.log('APP left', templates);
-      });
   }
   ngOnInit() {
   }
