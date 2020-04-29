@@ -2,6 +2,11 @@
   <div class="breadcrumb">
     You are here: <lo-outlet name="breadcrumb"></lo-outlet>
   </div>
+  <div class="depth">
+    <p *loZone name="depth">
+      Deepest: <lo-outlet [exclusive]="true"></lo-outlet>
+    </p>
+  </div>
   <a [routerLink]="['/']">← Back to Home</a>
 </header>
 <main>
