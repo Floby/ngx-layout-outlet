@@ -1,5 +1,6 @@
 import { LayoutOutletDirective } from './layout-outlet.directive';
 import {
+  EventEmitter,
   Injectable,
   TemplateRef
 } from '@angular/core';
@@ -12,13 +13,22 @@ export class LayoutService {
   private templates: Map<string, TemplateRef<any>[]> = new Map();
   constructor() { }
 
-  display(outletName: string, tpl: TemplateRef<any>): () => void {
-    this.addTemplateForName(outletName, tpl)
-    this.updateForName(outletName)
+  onContentChanged = new EventEmitter<string>()
+
+  display(name: string, tpl: TemplateRef<any>): () => void {
+    this.addTemplateForName(name, tpl)
+    this.updateForName(name)
+    this.onContentChanged.emit(name)
     return () => {
-      this.removeTemplateForName(outletName, tpl)
-      this.updateForName(outletName)
+      this.removeTemplateForName(name, tpl)
+      this.updateForName(name)
+      this.onContentChanged.emit(name)
     }
+  }
+
+  hasContentFor(name: string): boolean {
+    const templatesForName = this.templates.get(name) || []
+    return templatesForName.length > 0
   }
 
   private updateForName(name: string) {

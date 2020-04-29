@@ -9,6 +9,6 @@ import { ZoneDirective } from './zone.directive';
   declarations: [DisplayComponent, LayoutOutletDirective, ZoneDirective],
   imports: [
   ],
-  exports: [DisplayComponent, LayoutOutletDirective]
+  exports: [DisplayComponent, LayoutOutletDirective, ZoneDirective]
 })
 export class NgxLayoutOutletModule { }

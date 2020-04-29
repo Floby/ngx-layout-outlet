@@ -48,10 +48,12 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
   ngOnInit() {
     const location = this.location;
     this.layout.registerOutlet(this.name, this);
+    this.active = true
   }
 
   ngOnDestroy() {
     this.layout.unregisterOutlet(this);
+    this.active = false
   }
 
   attach(toDisplay: TemplateRef<any>[]) {
@@ -66,11 +68,9 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
         this.location.createEmbeddedView(template);
       }
     }
-    this.active = true;
   }
 
   detach() {
-    this.active = false;
     this.location.detach();
   }
 }
