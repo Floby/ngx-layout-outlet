@@ -12,6 +12,11 @@
   <section id="center">
     <h2>Center</h2>
     <lo-outlet name="center"></lo-outlet>
+    <section id="change" class="{{color}}">
+      <button role="button" (click)="toggleColor()">{{color}}</button>
+      <br>
+      <lo-outlet [name]="color"></lo-outlet>
+    </section>
   </section>
 </main>
 <router-outlet></router-outlet>

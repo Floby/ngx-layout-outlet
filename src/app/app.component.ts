@@ -7,4 +7,13 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'layout-outlet';
+  color = 'red';
+
+  toggleColor() {
+    if (this.color === 'red') {
+      this.color = 'blue'
+    } else {
+      this.color = 'red'
+    }
+  }
 }
