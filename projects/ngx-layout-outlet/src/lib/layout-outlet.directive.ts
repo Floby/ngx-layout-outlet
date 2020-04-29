@@ -5,6 +5,7 @@ import { ZoneName } from './zone-name';
 import {
   Attribute,
   Directive,
+  Host, Optional,
   OnInit,
   OnDestroy,
   TemplateRef,
@@ -36,9 +37,11 @@ export class LayoutOutletDirective implements OnInit, OnDestroy {
   constructor(
     private location: ViewContainerRef,
     private layout: LayoutService,
-    private zoneName: ZoneName
+    @Host() @Optional() private zoneName: ZoneName
   ) {
-    this.zoneName.subscribe((name) => this.outletName.next(name));
+    if (this.zoneName) {
+      this.zoneName.subscribe((name) => this.outletName.next(name));
+    }
   }
 
   ngOnInit() {
