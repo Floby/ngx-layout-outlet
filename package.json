@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "netlify-build": "ng build NgxLayoutOutlet && npm link --prefix dist/ngx-layout-outlet && npm link && ng build --prod",
     "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
