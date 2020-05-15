@@ -21,6 +21,9 @@
       <button role="button" (click)="toggleColor()">{{color}}</button>
       <br>
       <lo-outlet [name]="color"></lo-outlet>
+      <div *loInstead="color" class="empty">
+        No content for {{ color }}
+      </div>
     </section>
   </section>
 </main>

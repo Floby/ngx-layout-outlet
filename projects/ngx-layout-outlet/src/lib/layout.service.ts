@@ -1,4 +1,4 @@
-import { Observable, Subject, ReplaySubject } from 'rxjs';
+import { Observable, BehaviorSubject, Subject, ReplaySubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LayoutOutletDirective } from './layout-outlet.directive';
 import {
@@ -14,7 +14,7 @@ type Templates = TemplateRef<any>[];
 })
 export class LayoutService {
   private templates: Map<string, Templates> = new Map();
-  private tplSubjects: Map<string, PeakingReplaySubject<Templates>> =  new Map();
+  private tplSubjects: Map<string, BehaviorSubject<Templates>> =  new Map();
   constructor() { }
 
   onContentChanged = new EventEmitter<string>();
@@ -56,26 +56,10 @@ export class LayoutService {
 
   private getTemplateSubject(name: string) {
     if (!this.tplSubjects.has(name)) {
-      const subject = new PeakingReplaySubject<Templates>([]);
+      const subject = new BehaviorSubject<Templates>([]);
       this.tplSubjects.set(name, subject);
     }
     return this.tplSubjects.get(name);
   }
 }
 
-class PeakingReplaySubject<T> extends ReplaySubject<T> {
-  private last: T;
-  constructor(initial?: T) {
-    super(1);
-    this.last = initial;
-  }
-
-  peak(): T|undefined {
-    return this.last;
-  }
-
-  next(item: T) {
-    this.last = item;
-    super.next(item);
-  }
-}
